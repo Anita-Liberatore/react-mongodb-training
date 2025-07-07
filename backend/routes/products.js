@@ -2,9 +2,8 @@ const Router = require('express').Router;
 
 const router = Router();
 
+const { ObjectId } = require('mongodb');
 const db = require('../db'); // Import the database connection module
-
-const products = []; 
 
 // Get list of products products
 router.get('/', async (req, res, next) => {
@@ -24,9 +23,23 @@ router.get('/', async (req, res, next) => {
 
 
 // Get single product
-router.get('/:id', (req, res, next) => {
-  const product = products.find(p => p._id === req.params.id);
-  res.json(product);
+router.get('/:id', async (req, res) => {
+  const dbInstance = db.getDb();
+  const productsCollection = dbInstance.collection('products');
+  // Validate the ID and find the product by ID
+  try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid product ID' });
+    }
+    const product = await productsCollection.findOne({ _id: new ObjectId(req.params.id) });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json(product);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Error retrieving product' });
+  }
 });
 
 // Add new product

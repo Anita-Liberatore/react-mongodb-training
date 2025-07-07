@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
 
 const MongoClient = mongodb.MongoClient;
-const mongoDbUrl = 'mongodb+srv://liberatoreanita:Torino2024@cluster0.ksz5bcd.mongodb.net/shop?retryWrites=true';
+const mongoDbUrl = 'mongodb://localhost:27017/shop';
 
 let _db;
 
